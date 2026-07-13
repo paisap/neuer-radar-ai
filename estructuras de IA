@@ -1,0 +1,5 @@
+README.md      → qué hace el proyecto
+TODO.md        → tareas pendientes
+DECISIONS.md   → decisiones técnicas tomadas
+CLAUDE.md      → instrucciones para agentes de código
+AGENTS.md      → instrucciones para Codex/otros agentes
