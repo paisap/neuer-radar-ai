@@ -5,7 +5,6 @@ from pathlib import Path
 
 from neuer_radar.core.models import Article, ScoredArticle
 
-
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS articles (
     link TEXT PRIMARY KEY,

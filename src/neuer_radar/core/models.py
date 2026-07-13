@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field, HttpUrl
@@ -38,7 +38,7 @@ class ScoredArticle(BaseModel):
 
 
 class DailyDigest(BaseModel):
-    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     title: str
     items: list[ScoredArticle]
     recommendation: str

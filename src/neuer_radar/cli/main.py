@@ -3,7 +3,7 @@ from __future__ import annotations
 import typer
 from rich.console import Console
 
-from neuer_radar.collectors.rss import collect_all
+from neuer_radar.collectors.router import collect_all
 from neuer_radar.core.config_loader import load_profile, load_sources
 from neuer_radar.core.digest import build_digest, render_markdown, save_digest
 from neuer_radar.core.scoring import rank_articles
