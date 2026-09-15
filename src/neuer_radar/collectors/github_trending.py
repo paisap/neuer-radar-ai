@@ -58,6 +58,5 @@ def collect_github_trending(source: Source, limit: int = 25) -> list[Article]:
             )
         )
 
-    print("estos son los github")
-    print(articles)
+
     return articles

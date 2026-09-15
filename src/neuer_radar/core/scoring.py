@@ -50,8 +50,7 @@ def _normalize(text: str) -> str:
 
 def score_article(article: Article, profile: UserProfile) -> ScoredArticle:
     text = _normalize(f"{article.title} {article.summary} {' '.join(article.tags)}")
-    print("soy el texto hpt<z")
-    print(text)
+    
 
     score = 0
     hits: list[str] = []

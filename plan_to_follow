@@ -1,0 +1,9 @@
+Fase 1: Base CLI local
+Fase 2: Fuentes reales de información
+Fase 3: Scoring barato
+Fase 4: Capa LLM intercambiable
+Fase 5: Integrar IA opcional al digest
+Fase 6: Feedback y memoria
+Fase 7: LangGraph para orquestar flujo
+Fase 8: RAG / búsqueda histórica
+Fase 9: Deploy / AWS / automatización diaria

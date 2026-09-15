@@ -55,6 +55,5 @@ def collect_hacker_news(source: Source, limit: int = 30) -> list[Article]:
             )
         )
 
-    print("estos son los hacker new")
-    print(articles)
+
     return articles

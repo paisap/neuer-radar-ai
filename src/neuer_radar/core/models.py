@@ -34,7 +34,7 @@ class ScoredArticle(BaseModel):
     article: Article
     relevance_score: int = Field(ge=0, le=100)
     reason: str
-    decision: Literal["keep", "skip"]
+    decision: Literal["keep", "skip", "maybe"]
 
 
 class DailyDigest(BaseModel):

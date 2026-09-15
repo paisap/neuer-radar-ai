@@ -9,6 +9,7 @@ from neuer_radar.core.digest import build_digest, render_markdown, save_digest
 from neuer_radar.core.scoring import rank_articles
 from neuer_radar.core.settings import settings
 from neuer_radar.storage.sqlite import save_scored_articles
+from neuer_radar.ai.classifier import refine_articles_with_ai
 
 app = typer.Typer(help="Neuer Radar AI - personal daily signal collector")
 console = Console()
@@ -24,7 +25,25 @@ def run(limit_per_source: int = 5, max_items: int = 10) -> None:
     console.print(f"[bold]Sources:[/bold] {len(sources)}")
 
     articles = collect_all(sources, limit_per_source=limit_per_source)
+    # scored = rank_articles(articles, profile)
+    # save_scored_articles(settings.radar_db_path, scored)
     scored = rank_articles(articles, profile)
+
+    scored = refine_articles_with_ai(
+        scored,
+        profile,
+    )
+    print("\n============ FINAL DECISIONS =============")
+
+    for item in scored:
+        print(
+            f"{item.decision.upper():5} | "
+            f"{item.relevance_score:3} | "
+            f"{item.article.title}"
+        )
+
+    print("==========================================\n")
+
     save_scored_articles(settings.radar_db_path, scored)
 
     digest = build_digest(scored, profile, max_items=max_items)
