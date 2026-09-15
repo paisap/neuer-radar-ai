@@ -5,6 +5,7 @@ from typing import Literal
 from mypy import messages
 from pydantic import BaseModel, Field
 
+from neuer_radar.ai.prompts import SYSTEM_PROMPT, build_classification_prompt
 from neuer_radar.ai.providers.factory import get_llm_provider
 from neuer_radar.core.models import Article, UserProfile
 from neuer_radar.core.models import Article, ScoredArticle, UserProfile
@@ -48,44 +49,8 @@ def classify_article_with_ai(
     print("soy el profile")
 
     messages = [
-        {
-            "role": "system",
-            "content": (
-                "Eres un clasificador estricto de noticias técnicas. "
-                "Debes responder únicamente JSON válido. "
-                "No uses markdown. No expliques fuera del JSON. "
-                "Evalúa si el artículo le sirve a Santiago para sus objetivos."
-            ),
-        },
-        {
-            "role": "user",
-            "content": (
-                "Perfil de Santiago:\n"
-                f"- Intereses: {', '.join(profile.interests)}\n"
-                f"- Evitar: {', '.join(profile.avoid)}\n"
-                f"- Objetivos: {', '.join(profile.goals)}\n\n"
-                "Criterio:\n"
-                "- Prioriza AI agents, LangGraph, DevOps automation, AWS, Python, "
-                "LLMOps, RAG, platform engineering, security, observability y trabajo remoto.\n"
-                "- Penaliza hype genérico, crypto sin relación, frontend puro, noticias vagas "
-                "y contenido que no ayude a construir habilidades o proyectos.\n"
-                "- Usa 'keep' solo si realmente vale la pena leerlo.\n"
-                "- Usa 'maybe' si podría servir pero falta contexto.\n"
-                "- Usa 'skip' si no aporta.\n\n"
-                "Artículo:\n"
-                f"- Título: {article.title}\n"
-                f"- Fuente: {article.source_name}\n"
-                f"- Categoría: {article.source_category}\n"
-                f"- URL: {article.link}\n"
-                f"- Resumen/metadata: {article.summary}\n"
-                f"- Tags: {', '.join(article.tags)}\n\n"
-                "Devuelve JSON con estos campos:\n"
-                "- decision\n"
-                "- relevance_score\n"
-                "- reason: explicación corta en español\n"
-                "- angle: cómo Santiago podría usarlo o por qué importa"
-            ),
-        },
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": build_classification_prompt(article, profile)},
     ]
 
     print("\n================ PROMPT ===================")

@@ -27,8 +27,8 @@ class Article(BaseModel):
     link: str
     published_at: datetime | None = None
     summary: str = ""
+    content_excerpt: str = ""
     tags: list[str] = Field(default_factory=list)
-
 
 class ScoredArticle(BaseModel):
     article: Article

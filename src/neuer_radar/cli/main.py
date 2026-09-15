@@ -3,6 +3,7 @@ from __future__ import annotations
 import typer
 from rich.console import Console
 
+from neuer_radar.enrichers.github import enrich_candidates
 from neuer_radar.collectors.router import collect_all
 from neuer_radar.core.config_loader import load_profile, load_sources
 from neuer_radar.core.digest import build_digest, render_markdown, save_digest
@@ -28,11 +29,12 @@ def run(limit_per_source: int = 5, max_items: int = 10) -> None:
     # scored = rank_articles(articles, profile)
     # save_scored_articles(settings.radar_db_path, scored)
     scored = rank_articles(articles, profile)
-
+    scored = enrich_candidates(scored)
     scored = refine_articles_with_ai(
         scored,
         profile,
     )
+    
     print("\n============ FINAL DECISIONS =============")
 
     for item in scored:
