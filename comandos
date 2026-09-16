@@ -1,3 +1,4 @@
 uv run neuer-radar doctor realiza un follow completo
 ollama list ñlista modelos
 uv run neuer-radar run corre el programa
+sudo systemctl stop ollama
