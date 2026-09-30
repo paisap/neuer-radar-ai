@@ -45,7 +45,54 @@ def fetch_github_readme(article: Article) -> str:
                 print(f"Raw README chars: {len(content)}")
                 print(f"Clean README chars: {len(clean_content)}")
 
-            return clean_content[:MAX_README_CHARS]
+            return fetch_github_readme_from_url(article.link)
+
+        except Exception:
+            continue
+
+    return ""
+
+def fetch_github_readme_from_url(url: str) -> str:
+    repo = _github_repo_from_url(url)
+
+    if not repo:
+        return ""
+
+    owner, name = repo
+
+    for branch in ("main", "master"):
+        raw_url = (
+            f"https://raw.githubusercontent.com/"
+            f"{owner}/{name}/{branch}/README.md"
+        )
+
+        try:
+            request = Request(
+                raw_url,
+                headers={
+                    "User-Agent": "Neuer-Radar-AI"
+                },
+            )
+
+            with urlopen(
+                request,
+                timeout=8,
+            ) as response:
+
+                content = (
+                    response
+                    .read()
+                    .decode(
+                        "utf-8",
+                        errors="ignore",
+                    )
+                )
+
+            clean_content = _clean_readme(content)
+
+            return clean_content[
+                :MAX_README_CHARS
+            ]
 
         except Exception:
             continue

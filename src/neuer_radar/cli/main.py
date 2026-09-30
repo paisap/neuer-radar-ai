@@ -28,12 +28,17 @@ def run(limit_per_source: int = 5, max_items: int = 10) -> None:
     articles = collect_all(sources, limit_per_source=limit_per_source)
     # scored = rank_articles(articles, profile)
     # save_scored_articles(settings.radar_db_path, scored)
+    # scored = rank_articles(articles, profile)
+    # scored = enrich_candidates(scored)
+    # scored = refine_articles_with_ai(
+    #     scored,
+    #     profile,
+    # )
     scored = rank_articles(articles, profile)
-    scored = enrich_candidates(scored)
-    scored = refine_articles_with_ai(
-        scored,
-        profile,
-    )
+
+    scored = refine_articles_with_ai(scored,profile)
+
+    save_scored_articles(settings.radar_db_path,scored  )
     
     print("\n============ FINAL DECISIONS =============")
 

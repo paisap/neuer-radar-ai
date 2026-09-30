@@ -8,6 +8,7 @@ from typing import Any
 
 import httpx
 from dotenv import load_dotenv
+from langchain_core import messages
 
 from neuer_radar.ai.providers.base import LLMProvider
 
@@ -56,7 +57,7 @@ class OllamaConfig:
                 "qwen3.5:9b",
             ),
             temperature=float(
-                os.getenv("LLM_TEMPERATURE", "0.9")
+                os.getenv("LLM_TEMPERATURE", "0.1")
             ),
             timeout=float(
                 os.getenv("LLM_TIMEOUT", "90")
@@ -327,3 +328,163 @@ class OllamaProvider(LLMProvider):
         )
 
         print("====================================\n")
+
+    def chat_with_tools(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+
+        options: dict[str, Any] = {
+            "temperature": self.config.temperature,
+        }
+
+        if self.config.num_ctx is not None:
+            options["num_ctx"] = self.config.num_ctx
+
+        if self.config.seed is not None:
+            options["seed"] = self.config.seed
+
+        request_payload = {
+            "model": self.model,
+            "messages": messages,
+            "tools": tools,
+            "stream": False,
+            "think": self.config.think,
+            "keep_alive": self.config.keep_alive,
+            "options": options,
+        }
+
+        if self.config.debug:
+
+
+            print("\n========== TOOL-AWARE REQUEST ==========")
+            print(f"Model: {self.model}")
+            print(f"Endpoint: {self.config.base_url}/api/chat")
+
+            print("\n--- TOOLS SENT TO MODEL ---")
+            print(
+                json.dumps(
+                    tools,
+                    indent=2,
+                    ensure_ascii=False,
+                )
+            )
+
+            print("\n--- MESSAGES SENT TO MODEL ---")
+
+            for index, message in enumerate(messages, start=1):
+                print(f"\nMESSAGE {index}")
+                print(f"Role: {message.get('role')}")
+                print(f"Content:\n{message.get('content', '')}")
+
+            print("\n========================================\n")
+
+            print(f"Model: {self.model}")
+
+            print(
+                "Available tools:",
+                [
+                    tool["function"]["name"]
+                    for tool in tools
+                ],
+            )
+
+            print(
+                "========================================\n"
+            )
+
+        started_at = perf_counter()
+
+        try:
+            response = httpx.post(
+                f"{self.config.base_url}/api/chat",
+                json=request_payload,
+                timeout=self.config.timeout,
+            )
+
+            response.raise_for_status()
+
+        except httpx.HTTPError as exc:
+
+            raise RuntimeError(
+                f"Ollama tool request failed: {exc}"
+            ) from exc
+
+        elapsed = perf_counter() - started_at
+
+        payload = response.json()
+
+        message = payload.get(
+            "message",
+            {},
+        )
+        if self.config.debug:
+            print("\n========== RAW TOOL RESPONSE ==========")
+
+            print(
+                json.dumps(
+                    message,
+                    indent=2,
+                    ensure_ascii=False,
+                )
+            )
+
+            print("=======================================\n")
+
+        if not message:
+            raise ValueError(
+                f"Ollama returned no message: {payload}"
+            )
+
+        if self.config.debug:
+
+            tool_calls = message.get(
+                "tool_calls",
+                [],
+            )
+
+            print(
+                "\n========== TOOL DECISION =========="
+            )
+
+            print(
+                f"Elapsed: {elapsed:.2f}s"
+            )
+
+            if tool_calls:
+
+                for call in tool_calls:
+
+                    function = call.get(
+                        "function",
+                        {},
+                    )
+
+                    print(
+                        "Requested:",
+                        function.get("name"),
+                    )
+
+                    print(
+                        "Arguments:",
+                        function.get(
+                            "arguments",
+                        ),
+                    )
+
+            else:
+                print(
+                    "Model requested no tools."
+                )
+
+            print(
+                "===================================\n"
+            )
+        print("\n--- RAW ASSISTANT MESSAGE ---")
+        print("Content:", message.get("content"))
+        print("Thinking:", message.get("thinking"))
+        print("Tool calls:", message.get("tool_calls"))
+        print("-----------------------------\n")
+
+        return message

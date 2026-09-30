@@ -8,12 +8,20 @@ from neuer_radar.ai.providers.base import LLMProvider
 from neuer_radar.ai.providers.ollama import OllamaProvider
 
 
-def get_llm_provider() -> LLMProvider:
+def get_llm_provider(
+    model: str | None = None,
+) -> LLMProvider:
+
     load_dotenv()
 
-    provider = os.getenv("LLM_PROVIDER", "ollama").lower().strip()
+    provider = os.getenv(
+        "LLM_PROVIDER",
+        "ollama",
+    ).lower().strip()
 
     if provider == "ollama":
-        return OllamaProvider()
+        return OllamaProvider(model=model)
 
-    raise ValueError(f"Unsupported LLM_PROVIDER: {provider}")
+    raise ValueError(
+        f"Unsupported LLM_PROVIDER: {provider}"
+    )
