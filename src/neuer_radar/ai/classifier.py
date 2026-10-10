@@ -5,7 +5,13 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-from neuer_radar.ai.prompts import SYSTEM_PROMPT, build_classification_prompt
+from neuer_radar.ai.prompts import (
+    FINAL_CLASSIFICATION_PROMPT,
+    INVESTIGATION_SYSTEM_PROMPT,
+    SYSTEM_PROMPT,
+    build_classification_prompt,
+    build_investigation_prompt,
+)
 from neuer_radar.ai.providers.factory import get_llm_provider
 from neuer_radar.ai.tools.registry import (
     AVAILABLE_TOOL_SCHEMAS,
@@ -210,16 +216,7 @@ def classify_article_with_ai(
         schema=ARTICLE_CLASSIFICATION_SCHEMA,
     )
 
-    print("\n========== RAW INITIAL DECISION ==========")
-    print(
-        json.dumps(
-            raw_decision,
-            indent=2,
-            ensure_ascii=False,
-        )
-    )
-    print("==========================================\n")
-
+    
     decision = _validate_ai_decision(
         raw_decision
     )
@@ -260,17 +257,15 @@ def investigate_article_with_tools(
 
     messages: list[dict[str, Any]] = [
         {
-            "role": "system",
-            "content": (
-                "Eres un investigador técnico. "
-                "Una clasificación inicial determinó que "
-                "el proyecto es incierto. "
-                "Puedes utilizar herramientas para obtener "
-                "evidencia adicional antes de tomar una "
-                "decisión final. "
-                "No inventes información. "
-                "Si necesitas comprender mejor un repositorio "
-                "GitHub, utiliza get_github_readme."
+            "role": "system", "content": INVESTIGATION_SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": build_investigation_prompt(
+                article,
+                profile,
+                initial_decision.decision,
+                initial_decision.relevance_score,
+                initial_decision.reason,
             ),
         },
         {
@@ -430,23 +425,7 @@ def investigate_article_with_tools(
     # AHORA EL MODELO TIENE NUEVA INFORMACIÓN
     # --------------------------------------------------------
 
-    messages.append(
-        {
-            "role": "user",
-            "content": (
-                "Ahora que tienes la información obtenida "
-                "por las herramientas, realiza la clasificación "
-                "final.\n\n"
-                "Usa estas reglas:\n"
-                "- 0-39 = skip\n"
-                "- 40-69 = maybe\n"
-                "- 70-100 = keep\n"
-                "- decision y relevance_score deben ser "
-                "coherentes.\n"
-                "- Basa tu decisión en la evidencia disponible."
-            ),
-        }
-    )
+    messages.append({"role": "user", "content": FINAL_CLASSIFICATION_PROMPT})
 
     _print_messages(
         "FINAL CLASSIFICATION AFTER TOOLS",

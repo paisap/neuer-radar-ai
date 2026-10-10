@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from datetime import datetime
+from uuid import uuid4
+from pathlib import Path
+
 import typer
 from rich.console import Console
 
-from neuer_radar.enrichers.github import enrich_candidates
 from neuer_radar.collectors.router import collect_all
 from neuer_radar.core.config_loader import load_profile, load_sources
 from neuer_radar.core.digest import build_digest, render_markdown, save_digest
@@ -11,6 +14,10 @@ from neuer_radar.core.scoring import rank_articles
 from neuer_radar.core.settings import settings
 from neuer_radar.storage.sqlite import save_scored_articles
 from neuer_radar.ai.classifier import refine_articles_with_ai
+from neuer_radar.core.run_trace import RunTrace, ArticleTrace
+from neuer_radar.enrichers.github import enrich_candidates
+
+from neuer_radar.core.run_trace import RunTrace
 
 app = typer.Typer(help="Neuer Radar AI - personal daily signal collector")
 console = Console()
@@ -19,6 +26,13 @@ console = Console()
 @app.command()
 def run(limit_per_source: int = 5, max_items: int = 10) -> None:
     """Collect RSS articles, score them, persist them, and generate a Markdown digest."""
+#    limit_per_source = 1
+#    max_items = 1
+    trace = RunTrace(
+        run_id=str(uuid4()),
+        started_at=datetime.now(),
+    )
+
     profile = load_profile(settings.radar_profile_path)
     sources = load_sources(settings.radar_sources_path)
 
@@ -26,20 +40,22 @@ def run(limit_per_source: int = 5, max_items: int = 10) -> None:
     console.print(f"[bold]Sources:[/bold] {len(sources)}")
 
     articles = collect_all(sources, limit_per_source=limit_per_source)
-    # scored = rank_articles(articles, profile)
-    # save_scored_articles(settings.radar_db_path, scored)
-    # scored = rank_articles(articles, profile)
-    # scored = enrich_candidates(scored)
-    # scored = refine_articles_with_ai(
-    #     scored,
-    #     profile,
-    # )
+
     scored = rank_articles(articles, profile)
 
-    scored = refine_articles_with_ai(scored,profile)
+    for item in scored:
+        article_trace = ArticleTrace(
+            title=item.article.title,
+            source=item.article.source_name,
+            heuristic_score=getattr(item, "score", None),
+        )
 
-    save_scored_articles(settings.radar_db_path,scored  )
-    
+        trace.articles.append(article_trace)
+
+    scored = refine_articles_with_ai(scored, profile)
+
+    save_scored_articles(settings.radar_db_path, scored)
+
     print("\n============ FINAL DECISIONS =============")
 
     for item in scored:
@@ -51,15 +67,16 @@ def run(limit_per_source: int = 5, max_items: int = 10) -> None:
 
     print("==========================================\n")
 
-    save_scored_articles(settings.radar_db_path, scored)
-
     digest = build_digest(scored, profile, max_items=max_items)
     markdown = render_markdown(digest)
     output_path = save_digest(markdown, settings.radar_output_dir)
 
+    trace.finished_at = datetime.now()
+
     console.print(f"[green]Digest generated:[/green] {output_path}")
     console.print(f"[green]Articles collected:[/green] {len(articles)}")
     console.print(f"[green]Items kept:[/green] {len(digest.items)}")
+    console.print(f"[green]Trace articles:[/green] {len(trace.articles)}")
 
 
 @app.command()

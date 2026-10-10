@@ -1,0 +1,212 @@
+# =====================================================================
+# NEUER PROFILE v1  -  Santiago Aldana Naranjo
+# Capas: core -> motivations -> career -> radar -> learning -> publisher
+# Cada módulo carga SOLO su capa (+ core resumido) para no gastar contexto.
+# Datos sensibles (plata, visa, runway) viven en private.local.yaml, NO aquí.
+# Lo marcado con TODO falta confirmar; lo marcado con (proposed) es sugerencia
+# de Claude que aún no has validado.
+# =====================================================================
+
+meta:
+  version: 1
+  updated_at: 2026-09-30
+  language_of_file: en        # keys en inglés, comentarios en español
+  changelog:
+    - 2026-09-30: v1 creado desde la entrevista (bloques 1-4)
+
+# ---------------------------------------------------------------------
+# CORE - quién eres (estable, cambia poco)
+# ---------------------------------------------------------------------
+core:
+  identity:
+    name: Santiago Aldana Naranjo
+    birth_date: 2000-12-22
+    origin: Armenia, Colombia          # ha vivido en Medellín y Bogotá
+    languages:
+      es: native
+      en: working_in_progress          # práctica diaria planeada (ver learning)
+  background:
+    education:
+      - ingenieria_de_sistemas_y_computacion   # incompleta
+      - holberton_school
+    experience_years:
+      studying_programming: 8-10
+      professional: 5-6
+    timeline:
+      - Holberton -> exploración cripto (Axie Infinity) -> IBM (proyecto Bancolombia)
+    experience:
+      - role: Software Specialist
+        company: IBM (proyecto Bancolombia)
+        from: 2022-10
+        to: TODO                         # confirmar fecha de salida
+        highlights:
+          - agentes con LangGraph + Bedrock que recomiendan correcciones a vulnerabilidades en CloudFormation (el ingeniero revisa y aprueba)
+          - reducción de costos AWS en 3 ambientes con cron jobs de encendido/apagado  # TODO: confirmar si el monto es mensual o total
+          - playbooks Ansible + pipelines para autoservicio de reseteo de contraseñas
+          - apoyo en migración de servidores Windows a Linux y su mantenimiento
+          - sistemas RAG sobre AWS/Python, chatbots que disparan Ansible y Azure DevOps
+          - integración de LLMs (OpenAI, Claude, Bedrock) con pipelines de infraestructura
+      - role: Software Engineer
+        company: Flylinkers (red social para aviación, "LinkedIn de la aviación")
+        from: 2021-11
+        to: 2022-06
+        highlights:
+          - API REST con Python/Django y MySQL en RDS
+          - tiempo real con Firebase, servidores, Docker dev/prod para el equipo
+  skills:
+    languages: [python, bash, c]
+    frameworks: [django, langgraph]
+    cloud: [aws, lambda, ec2, s3, rds, eks, iam, bedrock]
+    iac_and_automation: [terraform, cloudformation, ansible, azure_devops, docker, git]
+    data: [mysql, mariadb, firestore]
+    os: [ubuntu, windows_server_2016_2019]
+    ai: [llm_integration, rag, embeddings, agents, tool_calling]
+    certifications: [aws_ccp, aws_saa]     # EX374 (Red Hat) en preparación
+  self_assessment:
+    strengths: [aprende_rapido, social, implementar_IA_eficiente_y_barato]
+    evidence_over_claims: true              # preferir proyectos y logros a autoevaluaciones
+
+# ---------------------------------------------------------------------
+# MOTIVATIONS - el "por qué" (la capa que hace que el modelo te entienda)
+# ---------------------------------------------------------------------
+motivations:
+  drivers:
+    - proyecto_sobre_plata
+    - equity_en_startup_es_atractivo
+    - crecer_en_algo_grande
+    - retos_y_cultura_nueva
+  situation:
+    life_stage: joven, sin cargas que lo aten a un lugar, margen para apostar
+    attitude: dispuesto_a_darlo_todo_por_el_proyecto_correcto
+  work_style:
+    energized_by: [proponer_ideas, experimentar, investigar, integrar_IA]
+    drained_by: [trabajo_repetitivo, responder_tickets]
+    overtime: ok_si_bien_pagado_y_legal
+    environment_pref: inmersivo > hibrido > remoto   # remoto lo sobrelleva
+  strategy: >
+    Ser un monstruo de infraestructura usando la IA como multiplicador
+    (delegar varias tareas a la vez), sin dejar de reforzar bases de
+    programación. Entender lo que la IA hace, no solo delegarla.
+  communication:
+    tone: informal_colombiano_directo
+    wants_from_ai: entender_el_por_que_no_solo_el_que
+    learning_style: [repaso, ejercicios, ritmo_humano]   # un concepto no se aprende de una explicación
+
+# ---------------------------------------------------------------------
+# CAREER - hacia dónde vas
+# ---------------------------------------------------------------------
+career:
+  target_roles:
+    - ai_platform_engineer
+    - llmops_ai_infra
+    - ai_engineer_agents
+    - early_engineer_startup
+  location:
+    flexibility: total               # sin filtro duro de país/ciudad/modo
+    modes: [onsite, hybrid, remote]
+    note: cada oferta se marca con sponsors_visa: true|false|unknown, sin descartarla
+  ranking_weights:                   # (proposed) ajustables
+    project_quality: 0.30
+    learning_curve: 0.25
+    equity_upside: 0.15
+    compensation: 0.15
+    work_mode_fit: 0.10
+    stability: 0.05
+  hard_filters:
+    - trabajo_repetitivo_tipo_tickets
+  nice_to_have: [agentes_en_produccion, langgraph_o_similar, equity]
+  positioning: >
+    IA aplicada en entornos reales y regulados (banca), no demos.
+    Combinación infra + agentes.
+  bridge_income:                     # (proposed) puente mientras llega el rol
+    - freelance_automatizacion_con_agentes_para_pymes
+  future_ideas:                      # en pausa, no es prioridad ahora
+    - publicador_privado_x_linkedin
+    - saas_adaptado_al_mercado_local
+    - modelo_personal_fine_tuning
+
+# ---------------------------------------------------------------------
+# RADAR - qué leer (lo consume el heuristic scoring y el classifier)
+# ---------------------------------------------------------------------
+radar:
+  sources:
+    active: [hacker_news, github_trending, reddit]
+    reddit_subreddits: TODO          # 2-3 concretos
+    later: [newsletters, x_accounts, blogs]
+  lanes:                             # (proposed) suman 1.0
+    career_core:
+      weight: 0.50
+      topics: [langgraph, ai_agents, llmops, aws_ai, platform_engineering, mcp, infra_and_servers, deployment]
+      bias: tecnologias_con_traccion_real
+    money_experiments:
+      weight: 0.15
+      topics: [monetizacion_con_ia, side_projects_rentables]
+      requires_evidence: true        # ingresos verificables, caso real o código funcional
+    market_arbitrage:
+      weight: 0.15
+      topics: [productos_probados_adaptables_a_colombia]
+      requires: [traccion_real, adaptable_localmente]
+    fun_and_frontier:
+      weight: 0.20
+      topics: [demos_curiosas, experimentos_raros, agentes_que_controlan_el_pc]
+      max_per_digest: 2
+  adjustments:                       # sumar/restar al score
+    boost:
+      agents_in_production: 0.8
+      infra_and_servers: 0.6
+      deployment_and_platform: 0.6
+      proven_market_tech: 0.5
+    penalize:
+      frontend_only: -0.8
+      generic_ai_hype: -0.8
+      beginner_tutorials: -0.6
+      crypto: -0.4
+      low_quality_youtube: -0.6
+    neutral:
+      security: solo_incidentes_o_vulnerabilidades_serias
+  maturity_filter:                   # (proposed) mejora futura del heuristic scoring
+    prefer: [meses_de_vida, commits_activos, estrellas_sostenidas, uso_real]
+    allow_new_if: [fun_and_frontier, muy_relevante]
+
+# ---------------------------------------------------------------------
+# LEARNING - qué aprender y a qué ritmo
+# ---------------------------------------------------------------------
+learning:
+  capacity:
+    hours_per_day: 5                 # a ritmo humano, sin exagerar
+  proposed_split:                    # (proposed)
+    neuer_build: 2.0
+    study_with_exercises: 1.0
+    income_search: 1.5
+    english: 0.5
+  method: explicar_corto -> implementar -> quiz_al_dia_siguiente -> mini_reto_a_la_semana
+  priorities:                        # (proposed) orden
+    1: summarizer_y_enrichment
+    2: tool_loop_generico
+    3: perfil_dinamico_conectado_al_scoring
+    4: evals_y_observabilidad_de_llms
+    5: rag_con_embeddings_luego_langgraph_y_mcp
+  english_plan:
+    - readme_commits_y_prompts_del_proyecto_en_ingles
+    - leer_docs_y_escribir_en_ingles_a_diario
+
+# ---------------------------------------------------------------------
+# PUBLISHER - para cuando llegue (en pausa, todavía no se construye)
+# ---------------------------------------------------------------------
+publisher:
+  status: paused
+  topics: [ai, cloud, devops, automation, ia_aplicada_en_entornos_regulados]
+  tone: [technical, curious, pragmatic]
+  avoid: [generic_hype, low_quality_youtube, frontend_only]
+  language: TODO                     # es, en o bilingüe
+  voice_samples: TODO                # 3-5 posts tuyos o de otros que te gusten
+  mode: draft_only                   # tú apruebas, nada se auto-publica
+  never_publish:
+    - detalles_internos_de_empleadores_o_clientes
+    - datos_de_cuentas_o_infraestructura_reales
+    - cifras_confidenciales
+  data_to_keep_for_future_finetune:  # guardar limpio desde ya
+    - decisiones_keep_skip_del_radar
+    - posts_aprobados_y_rechazados
+    - este_perfil_y_su_historial
+    

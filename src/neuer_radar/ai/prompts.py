@@ -75,3 +75,72 @@ def build_classification_prompt(
     - reason: explicación corta en español (máximo 2 frases)
     - angle: cómo podría usarlo el usuario o por qué importa (1 frase)
     """.strip()
+
+
+# ============================================================
+# INVESTIGACIÓN CON TOOLS  (usado por investigate_article_with_tools)
+# ============================================================
+
+INVESTIGATION_SYSTEM_PROMPT = """
+Eres un investigador técnico de repositorios de GitHub.
+Contexto: una primera clasificación marcó este repositorio como "maybe"
+porque la metadata no alcanza para juzgarlo.
+
+Tu única tarea en este paso: conseguir la evidencia que falta. Para eso
+puedes pedir el README con la herramienta get_github_readme.
+
+Reglas:
+- Por defecto, llama a get_github_readme con la URL del repositorio.
+- Omite la herramienta solo si la metadata ya describe con claridad qué hace
+  el proyecto y cómo está construido.
+- No inventes información.
+- No clasifiques todavía: la decisión final se pide en un paso posterior.
+""".strip()
+
+
+def build_investigation_prompt(
+    article: Article,
+    profile: UserProfile,
+    initial_decision: str,
+    initial_score: int,
+    initial_reason: str,
+) -> str:
+    # Recibe valores sueltos (no AiArticleDecision) para no importar classifier.py
+    # desde aquí y evitar un import circular.
+    return (
+        f"Repositorio: {article.title}\n"
+        f"URL: {article.link}\n"
+        f"Metadata: {article.summary}\n\n"
+        "Clasificación inicial:\n"
+        f"- Decision: {initial_decision}\n"
+        f"- Score: {initial_score}\n"
+        f"- Reason: {initial_reason}\n\n"
+        "Perfil:\n"
+        f"- Intereses: {', '.join(profile.interests)}\n"
+        f"- Objetivos: {', '.join(profile.goals)}\n\n"
+        "Obtén el README para evaluar la arquitectura y la utilidad real del "
+        "proyecto, salvo que la metadata ya sea suficiente."
+    )
+
+
+# Se agrega como último mensaje de usuario, después de los resultados de las tools.
+FINAL_CLASSIFICATION_PROMPT = """
+Ya tienes la información obtenida por las herramientas.
+Realiza ahora la clasificación final del repositorio.
+
+Rúbrica:
+- 70-100 => "keep": el tema es relevante para el perfil y la evidencia muestra
+  sustancia técnica (arquitectura, patrones, código o uso real).
+- 40-69  => "maybe": solo si, incluso con el README, sigue sin estar claro lo
+  importante.
+- 0-39   => "skip": no aporta al perfil o es ruido.
+
+Reglas:
+- Basa tu decisión únicamente en la evidencia disponible (README y metadata).
+- No inventes información.
+- decision y relevance_score deben ser coherentes con la rúbrica.
+- reason: máximo 2 frases. angle: 1 frase.
+
+Devuelve JSON con exactamente estos campos:
+decision, relevance_score, reason, angle.
+""".strip()

@@ -1,25 +1,34 @@
   name: Santiago
   role_target: Cloud/DevOps Engineer focused on AI Infrastructure and Agentic Automation
   interests:
-    - AI agents
+    - AI agents in production
     - LangGraph
     - LangChain
-    - DevOps automation
-    - AWS
+    - tool calling and MCP
+    - LLMOps (evaluation, observability, cost and latency)
+    - RAG and embeddings
+    - AWS (Bedrock, Lambda, EKS)
+    - DevOps and infrastructure automation
+    - platform engineering
     - cloud security
-    - remote jobs
     - Python backend
-    - LLMOps
+    - AI engineering jobs (remote or relocation)
+    - technologies with proven market adoption
   avoid:
-    - generic hype
-    - low quality YouTube summaries
+    - generic AI hype
+    - low-quality YouTube summaries
     - frontend-only content
     - crypto speculation without engineering value
+    - beginner tutorials
+    - AI news without technical detail
+    - unverifiable "I made $X with AI" claims
   goals:
     - build a portfolio-worthy AI automation project
-    - stay current in AI + DevOps
-    - improve English with technical content
-    - find a strong remote job
+    - land a strong AI/cloud role in agents, LLMOps or AI platform engineering
+    - stay current in AI + DevOps with technologies that have real traction
+    - learn by building tool calling, MCP, RAG and LLM evals
+    - improve technical English by reading technical content
+    - find real, verifiable ways to monetize AI projects
   RESUME: Joven de 25 años de edad de la ciudad de armenia en colombia vivio por 5 años en medellin  trabaje 3 años en bancolombia contratado por IBM 
           tengo la capacidad de entender temas mucha disposicion pocas responsabilidades buscando algo apasionante que me pueda dar una nueva oportunidad en la vida
           o algo bastante retador todo el tema de backend siempre me intereso y estudio y hoy con la IA sol oveo oportunidades de integracion automatizacion o el mismo desarrollo
