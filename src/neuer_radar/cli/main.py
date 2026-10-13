@@ -16,6 +16,7 @@ from neuer_radar.storage.sqlite import save_scored_articles
 from neuer_radar.ai.classifier import refine_articles_with_ai
 from neuer_radar.core.run_trace import RunTrace, ArticleTrace
 from neuer_radar.enrichers.github import enrich_candidates
+from neuer_radar.core.run_report import save_run_trace
 
 from neuer_radar.core.run_trace import RunTrace
 
@@ -33,6 +34,7 @@ def run(limit_per_source: int = 5, max_items: int = 10) -> None:
         started_at=datetime.now(),
     )
 
+
     profile = load_profile(settings.radar_profile_path)
     sources = load_sources(settings.radar_sources_path)
 
@@ -43,6 +45,8 @@ def run(limit_per_source: int = 5, max_items: int = 10) -> None:
 
     scored = rank_articles(articles, profile)
 
+    article_traces_by_url = {}
+
     for item in scored:
         article_trace = ArticleTrace(
             title=item.article.title,
@@ -51,8 +55,18 @@ def run(limit_per_source: int = 5, max_items: int = 10) -> None:
         )
 
         trace.articles.append(article_trace)
+        article_traces_by_url[item.article.link] = article_trace
 
     scored = refine_articles_with_ai(scored, profile)
+
+    for item in scored:
+        article_trace = article_traces_by_url.get(item.article.link)
+
+        if article_trace is None:
+            continue
+
+        article_trace.final_decision = item.decision
+        article_trace.final_relevance_score = item.relevance_score
 
     save_scored_articles(settings.radar_db_path, scored)
 
@@ -72,11 +86,22 @@ def run(limit_per_source: int = 5, max_items: int = 10) -> None:
     output_path = save_digest(markdown, settings.radar_output_dir)
 
     trace.finished_at = datetime.now()
+    trace_path = Path(".data/runs") / f"{trace.run_id}.json"
+    save_run_trace(trace, trace_path)
+
+    console.print(f"[green]Run trace:[/green] {trace_path}")
 
     console.print(f"[green]Digest generated:[/green] {output_path}")
     console.print(f"[green]Articles collected:[/green] {len(articles)}")
     console.print(f"[green]Items kept:[/green] {len(digest.items)}")
     console.print(f"[green]Trace articles:[/green] {len(trace.articles)}")
+
+    for article_trace in trace.articles:
+        console.print(
+            f"[cyan]{article_trace.final_decision}[/cyan] "
+            f"{article_trace.final_relevance_score} | "
+            f"{article_trace.title}"
+        )
 
 
 @app.command()
